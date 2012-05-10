@@ -1,0 +1,27 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=4060
+
+This plugin provides commands to find words that are not syntactically highlighted in current buffer. I mostly used them to debug vim syntax engine / ctags / plugin TagHighlight etc.
+
+Commands:
+
+:NextNoSyntaxWord - find next word that is not syntactically highlighted.
+:GetNoSyntaxWords - get list of words that are not syntactically highlighted and show it.
+
+The list is stored in buffer variable b:nosyntaxwords and it can be shown again by issuing command
+
+:echo b:nosyntaxwords
+
+Due to difference between algorithms 'normal w' and 'expand("<cword>")' that are used in implementation of the plugin, global variable g:NswSkipSymbols was involved. This variable is a dictionary that contains lists of special symbols for specified filetypes that are supposed to be not syntactically highlighted for this filetype and must be skipped when using 'normal w', otherwise they will be included in the list or, even worse (if they do not belong to 'iskeyword' list), following them words will be included in the list.
+                                                                           
+By default g:NswSkipSymbols has support for filetypes 'c', 'cpp', 'python', 'perl', 'vim' and 'tagbar', but if needed this can be extended for using with other filetypes, default symbols for a supported filetype can be changed as well. For example, to add support for filetype 'ruby' put in your .vimrc lines
+
+let g:NswSkipSymbols = {}
+let g:NswSkipSymbols['ruby'] = ['(', ')']       " whatever else
+
+To use this plugin efficiently i recommend to use following mappings:
+
+nmap <silent> ,vv  :echo synIDattr(synID(line("."), col("."), 1), "name")<CR>
+nmap <silent> ,vn  :NextNoSyntaxWord<CR>
+nmap <silent> ,vl  :GetNoSyntaxWords<CR>
+
+(mapping ,vv is for showing syntax class of word under cursor and does not refer directly to this plugin).
